@@ -1,0 +1,48 @@
+# a method that returns the sum of two integers
+
+START - GET an integer from the user
+  SET var1 to user input
+  GET a second integer from the user
+  SET var2 to user input
+  
+  PRINT the result of var1 + var2
+END
+
+
+# a method that takes an array of strings, and returns a string that is all those strings concatenated together
+
+START
+  
+  GET a sentence/string OR an array of strings
+  SET string1 = user input
+  IF string1 is a sentence
+    string1 remove all " " and PRINT the result
+  ELSE
+    go over each element of the string1 and add it to empty_string ""
+    PRINT empty_string
+  
+  END
+    
+    
+# a method that takes an array of integers, and returns a new array with every other element from the original array, starting with the first element. For instance:
+
+  Create an iterator variable and set it to 1. Go over each item of the array, and if iterator is even, delete the item in the array. Add one to the iterator
+  for each item of the array. 
+      
+# a method that determines the index of the 3rd occurrence of a given character in a string. For instance, if the given character is 'x' and the string is 'axbxcdxex', the method should return 6 (the index of the 3rd 'x'). If the given character does not occur at least 3 times, return nil.     
+
+  START
+  
+    GET character
+    SET char = user input character
+    SET count = 0
+    define a method that:
+      iterates over the string, each time char == the string value, increase count by 1
+      IF count == 3
+        RETURN the current index of the string
+      IF count never equals 3, RETURN nil. The method invoked should return nil if it completes.
+    
+# a method that takes two arrays of numbers and returns the result of merging the arrays. The elements of the first array should become the elements at the even indexes of the returned array, while the elements of the second array should become the elements at the odd indexes. For instance:
+
+Define a method, merge, that takes the first array and for each element and put it in a  new blank array by using an indexer only placing the iteam at every even index (starting from zero).
+Then, it takes the second array and puts each element at the odd indexes of the array used to store the first array's values. Return the newly completed array. 

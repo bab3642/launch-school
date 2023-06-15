@@ -1,8 +1,6 @@
-num = 5
+array = []
 
-if (num < 10)
-  puts "small"
-else
-  puts "large"
-end
+array[0] = 1
 
+array[2] = 4
+p array
