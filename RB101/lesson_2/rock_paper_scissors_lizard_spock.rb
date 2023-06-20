@@ -8,10 +8,6 @@ MOVES = {
   l: %w(sp p)
 }
 
-def test_method
-  prompt('test message')
-end
-
 def prompt(message)
   Kernel.puts("=> #{message}")
 end
@@ -30,16 +26,16 @@ def display_results(player, computer)
   end
 end
 
-def count_wins(first, second, player, computer)
-  if win?(first, second)
+def count_wins(player, computer)
+  if win?(player[:choice], computer[:choice])
     player[:wins] += 1
-  elsif win?(second, first)
+  elsif win?(computer[:choice], player[:choice])
     computer[:wins] += 1
   end
 end
 
 opening_prompt = <<-MSG
-Welcome to Rock Paper Scissors Lizard Spock!
+=>Welcome to Rock Paper Scissors Lizard Spock!
 
 We will play three rounds!
 Rock = r
@@ -50,38 +46,38 @@ Spock = sp
 
 MSG
 prompt(opening_prompt)
+
 loop do
   round = 1
-  computer_wins = {wins: 0}
-  player_wins = {wins: 0}
+  computer = { wins: 0 }
+  player = { wins: 0 }
   loop do
-    choice = ''
-    prompt("Round #{round}!")  
-  
+    prompt("Round #{round}:")
+
     loop do
       prompt("Choose one: #{VALID_CHOICES.join(', ')}")
-      choice = Kernel.gets().chomp()
-  
-      if VALID_CHOICES.include?(choice)
+      player[:choice] = Kernel.gets().chomp()
+
+      if VALID_CHOICES.include?(player[:choice])
         break
       else
         prompt("That's not a valid chocie.")
       end
     end
-  
-    computer_choice = VALID_CHOICES.sample
-  
-    prompt("You chose: #{choice}; Computer chose: #{computer_choice}")
-    
-    display_results(choice, computer_choice)
-    
-    count_wins(choice, computer_choice, player_wins, computer_wins) 
 
+    computer[:choice] = VALID_CHOICES.sample
+
+    prompt("You chose: #{player[:choice]}; Computer chose
+    : #{computer[:choice]}")
+
+    display_results(player[:choice], computer[:choice])
+    count_wins(player, computer)
     round += 1
-    if computer_wins[:wins] == 3 
+
+    if computer[:wins] == 3
       prompt("The computer wins the match!")
       break
-    elsif player_wins[:wins] == 3
+    elsif player[:wins] == 3
       prompt("The player wins the match!")
       break
     end
