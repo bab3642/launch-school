@@ -1,5 +1,13 @@
 VALID_CHOICES = %w(r p sc l sp)
 
+MOVES = {
+  r: %w(sc l),
+  p: %w(r sp),
+  sc: %w(p l),
+  sp: %w(sc r),
+  l: %w(sp p)
+}
+
 def test_method
   prompt('test message')
 end
@@ -9,11 +17,7 @@ def prompt(message)
 end
 
 def win?(first, second)
-  (first == 'r' && (second == 'sc' || second == 'l')) ||
-    (first == 'p' && (second == 'r' || second == 'sp')) ||
-    (first == 'sc' && (second == 'p' || second == 'l')) ||
-    (first == 'sp' && (second == 'sc' || second == 'r')) ||
-    (first == 'l' && (second == 'sp' || second == 'p'))
+  MOVES[first.to_sym].include?(second)
 end
 
 def display_results(player, computer)
@@ -26,11 +30,11 @@ def display_results(player, computer)
   end
 end
 
-def count_wins(first, second, first_wins, second_wins)
+def count_wins(first, second, player, computer)
   if win?(first, second)
-    first_wins << 1
+    player[:wins] += 1
   elsif win?(second, first)
-    second_wins << 1
+    computer[:wins] += 1
   end
 end
 
@@ -48,8 +52,8 @@ MSG
 prompt(opening_prompt)
 loop do
   round = 1
-  computer_wins = []
-  player_wins = []
+  computer_wins = {wins: 0}
+  player_wins = {wins: 0}
   loop do
     choice = ''
     prompt("Round #{round}!")  
@@ -74,10 +78,10 @@ loop do
     count_wins(choice, computer_choice, player_wins, computer_wins) 
 
     round += 1
-    if computer_wins.length == 3 
+    if computer_wins[:wins] == 3 
       prompt("The computer wins the match!")
       break
-    elsif player_wins.length == 3
+    elsif player_wins[:wins] == 3
       prompt("The player wins the match!")
       break
     end
