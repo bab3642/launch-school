@@ -4,6 +4,7 @@
 # output the result
 require 'yaml'
 require 'pry'
+
 MESSAGES = YAML.load_file('calculator_messages.yml')
 OPERATIONS = {
   '1': "Adding",
@@ -17,7 +18,7 @@ def prompt(message, interpolating_hash = {})
 end
 
 def valid_number?(num)
-  Integer(num.to_i) rescue false || float?(num) 
+  /^-?\d+$/.match(num) || float?(num)
 end
 
 def operation_to_message(op)
@@ -25,17 +26,17 @@ def operation_to_message(op)
 end
 
 def float?(input)
-  Float(input.to_f) rescue false
+  /\d/.match(input) && /^-?\d*\.\d*$/.match(input)
 end
 
 def calculate(operator, num1, num2)
   case operator
   when '1'
-    num1.to_i() + num2.to_i()
+    num1.to_f() + num2.to_f()
   when '2'
-    num1.to_i() - num2.to_i()
+    num1.to_f() - num2.to_f()
   when '3'
-    num1.to_i() * num2.to_i()
+    num1.to_f() * num2.to_f()
   when '4'
     num1.to_f() / num2.to_f()
   end
@@ -83,12 +84,26 @@ def get_user_name()
   end
 end
 
+def continue?(input)
+  loop do
+    if input.downcase() == 'y' || input.downcase() == 'yes'
+      return true
+    elsif input.downcase() == 'n' || input.downcase() == 'no'
+      return false
+    else
+      prompt('invalid_continue')
+      input = Kernel.gets().chomp()
+    end
+  end
+end
+# Welcome prompt, get user name
 prompt('welcome')
 
 user_name = get_user_name()
 system("clear")
 prompt('username', name: user_name)
 
+# Main code loop
 loop do
   number1 = get_num('first')
   number2 = get_num('second')
@@ -105,7 +120,8 @@ loop do
   prompt('again?')
   
   answer = Kernel.gets().chomp()
-  break unless answer.downcase().start_with?('y')
+  break unless continue?(answer)
+  system("clear")
 end
 
 prompt('goodbye')
