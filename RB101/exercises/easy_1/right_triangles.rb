@@ -42,4 +42,41 @@ triangle3(0)
 triangle3(1)
 triangle3(9)
     
-    
+# Upside down
+def triangle_upside_down(n)
+  n.times do |idx|
+    puts "#{"*" * (n - (idx))}".rjust(n)
+  end
+end
+
+def triangle_left_angle(n)
+  n.times do |idx|
+    puts "#{"*" * (n - (n - (idx + 1)))}"
+  end
+end
+
+def triangle_top_left(n)
+  n.times do |idx|
+    puts "#{"*" * (n - (idx))}"
+  end
+end
+
+  
+# Right angle at any corner of grid
+# 1 for bottom left, 2 for top left, 3 top right, 4 for bottom right (goes clock
+# wise)
+def  triangle_turner(n, corner = 4)
+  case corner
+  when 4
+    triangle3(n)
+  when 3
+    triangle_upside_down(n)
+  when 2
+    triangle_top_left(n)
+  when 1
+    triangle_left_angle(n)
+  end
+end
+
+triangle_turner(10, 1)
+triangle_turner(5, 4)
