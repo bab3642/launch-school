@@ -5,16 +5,33 @@
 require 'yaml'
 require 'pry'
 
+LANG = 'en' # May change language to 'en' or 'es'
+
 MESSAGES = YAML.load_file('calculator_messages.yml')
 OPERATIONS = {
-  '1': "Adding",
-  '2': "Subtracting",
-  '3': "Multiplying",
-  '4': "Dividing"
+  en: 
+    { 
+      '1': "Adding",
+      '2': "Subtracting",
+      '3': "Multiplying",
+      '4': "Dividing"
+    },
+  es:
+    {
+      '1': "Agregando",
+      '2': "Restar",
+      '3': "Multiplicando",
+      '4': "Divisor"
+    }
+}
+
+CONTINUE = {
+  true => ['y', 'yes', 'sí'],
+  false => ['n', 'no']
 }
 
 def prompt(message, interpolating_hash = {})
-  Kernel.puts("=>  #{format(MESSAGES[message], interpolating_hash)}")
+  Kernel.puts("=>  #{format(MESSAGES[LANG][message], interpolating_hash)}")
 end
 
 def valid_number?(num)
@@ -22,7 +39,7 @@ def valid_number?(num)
 end
 
 def operation_to_message(op)
-  OPERATIONS[op.to_sym]
+  OPERATIONS[LANG.to_sym][op.to_sym]
 end
 
 def float?(input)
@@ -86,9 +103,9 @@ end
 
 def continue?(input)
   loop do
-    if input.downcase() == 'y' || input.downcase() == 'yes'
+    if CONTINUE[true].include?(input.downcase())
       return true
-    elsif input.downcase() == 'n' || input.downcase() == 'no'
+    elsif CONTINUE[false].include?(input.downcase())
       return false
     else
       prompt('invalid_continue')
@@ -111,7 +128,7 @@ loop do
   prompt('operator_prompt')
   
   operator = get_operator(number2)
-  
+
   prompt('operating', op: operation_to_message(operator))
   
   result = calculate(operator, number1, number2)
