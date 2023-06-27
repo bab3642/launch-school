@@ -103,11 +103,11 @@ end
 
 def display_results(number1, operator, number2, result)
   prompt('result', {
-                      op: OPERATION_SYMBOLS[operator.to_sym],
-                      res: result,
-                      num1: number1,
-                      num2: number2
-                    })
+           op: OPERATION_SYMBOLS[operator.to_sym],
+           res: result,
+           num1: number1,
+           num2: number2
+         })
 end
 
 # Welcome prompt, get user name
