@@ -1,28 +1,15 @@
-# ask the user for two numbers
-# ask the user for an operation to perform
-# perform the operation on the two numbers
-# output the result
 require 'yaml'
 require 'pry'
 
-LANG = 'en' # May change language to 'en' or 'es'
+LANG = 'es' # May change language to 'en' or 'es'
 
 MESSAGES = YAML.load_file('calculator_messages.yml')
-OPERATIONS = {
-  en: 
-    { 
-      '1': "Adding",
-      '2': "Subtracting",
-      '3': "Multiplying",
-      '4': "Dividing"
-    },
-  es:
-    {
-      '1': "Agregando",
-      '2': "Restar",
-      '3': "Multiplicando",
-      '4': "Divisor"
-    }
+
+OPERATION_SYMBOLS = {
+  '1': "+",
+  '2': "-",
+  '3': "*",
+  '4': "/"
 }
 
 CONTINUE = {
@@ -36,10 +23,6 @@ end
 
 def valid_number?(num)
   /^-?\d+$/.match(num) || float?(num)
-end
-
-def operation_to_message(op)
-  OPERATIONS[LANG.to_sym][op.to_sym]
 end
 
 def float?(input)
@@ -89,10 +72,10 @@ def div_zero?(operator, denominator)
   operator == '4' && denominator.to_f == 0
 end
 
-def get_user_name()
+def get_user_name
   loop do
     user_name = Kernel.gets().chomp()
-    
+
     if user_name.strip.empty?()
       prompt('valid_name')
     else
@@ -101,18 +84,32 @@ def get_user_name()
   end
 end
 
-def continue?(input)
+def continue?
   loop do
+    input = Kernel.gets().chomp()
     if CONTINUE[true].include?(input.downcase())
       return true
     elsif CONTINUE[false].include?(input.downcase())
       return false
     else
       prompt('invalid_continue')
-      input = Kernel.gets().chomp()
     end
   end
 end
+
+def operation_to_message(operator)
+  MESSAGES[LANG]['operations'][operator.to_i]
+end
+
+def display_results(number1, operator, number2, result)
+  prompt('result', {
+                      op: OPERATION_SYMBOLS[operator.to_sym],
+                      res: result,
+                      num1: number1,
+                      num2: number2
+                    })
+end
+
 # Welcome prompt, get user name
 prompt('welcome')
 
@@ -124,21 +121,19 @@ prompt('username', name: user_name)
 loop do
   number1 = get_num('first')
   number2 = get_num('second')
-  
+
   prompt('operator_prompt')
-  
   operator = get_operator(number2)
 
   prompt('operating', op: operation_to_message(operator))
-  
+
   result = calculate(operator, number1, number2)
-  prompt('result', res: result)
+  display_results(number1, operator, number2, result)
 
   prompt('again?')
-  
-  answer = Kernel.gets().chomp()
-  break unless continue?(answer)
+
+  break unless continue?()
   system("clear")
 end
 
-prompt('goodbye')
+prompt('goodbye', name: user_name)

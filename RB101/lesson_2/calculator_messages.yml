@@ -12,10 +12,15 @@ en:
         3) multiply
         4) divide
   valid_operator: "Must choose 1, 2, 3 or 4"
+  operations:
+    1: "Adding"
+    2: "Subtracting"
+    3: "Multiplying"
+    4: "Dividing"
   again?: "Do you want to perform another calculation? (y/n)"
-  goodbye: "Thank you for using the calculator. Good bye!"
+  goodbye: "Thank you for using the calculator. Goodbye %{name}!"
   operating: "%{op} the two numbers..."
-  result: "The result is %{res}"
+  result: "%{num1} %{op} %{num2} = %{res}"
   zero_divide: "Cannot divide by zero. Please choose a different operator."
   invalid_continue: "Please enter either 'y' or 'n'"
 es:
@@ -33,8 +38,13 @@ es:
         4) dividir
   valid_operator: "Debe elegir 1, 2, 3 o 4"
   again?: "¿Desea realizar otro cálculo? (y/n)"
-  goodbye: "Gracias por usar la calculadora. ¡Adiós!"
+  goodbye: "Gracias por usar la calculadora. ¡Adiós! %{name}"
   operating: "%{op} los dos numeros..."
-  result: "El resultado es %{res}"
+  operations: 
+    1: "Agregando"
+    2: "Restar"
+    3: "Multiplicando"
+    4: "Divisor"
+  result: "%{num1} %{op} %{num2} = %{res}"
   zero_divide: "No se puede dividir por cero. Elija un operador diferente."
   invalid_continue: "Ingrese 'y' o 'n'"
