@@ -15,8 +15,8 @@ tip = calculate_tip(bill, tip_pct)
 total = bill + tip
 
  
-puts "The tip is $" + sprintf("%0.2f", tip)
-puts "The total is $#{sprintf("%0.2f", total)}"
+puts "The tip is $" + sprintf("%.2f", tip)
+puts "The total is $#{sprintf("%.2f", total)}"
 
 
 
