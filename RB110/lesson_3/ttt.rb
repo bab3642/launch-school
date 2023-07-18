@@ -1,4 +1,5 @@
 require 'pry'
+require 'pry-byebug'
 
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
@@ -69,7 +70,35 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
+#todo - find out why this isn't working
+def close_win?(brd, line, marker)
+  (brd.values_at(*line).count(marker) == 2 && 
+  brd.values_at(*line).count(INITIAL_MARKER) == 1)
+end
+
 def computer_places_piece!(brd)
+  move = 0
+  WINNING_LINES.each do |line|
+    if close_win?(brd, line, COMPUTER_MARKER)
+      move = line.select do |space|
+             brd[space] == INITIAL_MARKER
+             end
+      brd[move[0]] = COMPUTER_MARKER
+      return
+    
+    end
+  end
+  
+  WINNING_LINES.each do |line|
+    if close_win?(brd, line, PLAYER_MARKER)
+      move = line.select do |space|
+             brd[space] == INITIAL_MARKER
+             end
+      brd[move[0]] = COMPUTER_MARKER
+      return
+    end
+  end
+  
   square = empty_squares(brd).sample
   brd[square] = COMPUTER_MARKER
 end
@@ -136,6 +165,8 @@ loop do
       gets.chomp
     else
       prompt "It's a tie!"
+      prompt "Press any key to continue"
+      gets.chomp
       round_counter += 1
     end
   end
