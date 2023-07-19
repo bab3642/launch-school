@@ -4,6 +4,7 @@ require 'pry-byebug'
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
+WINNING_SCORE = 5
 
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # columns
@@ -43,7 +44,7 @@ def joinor(array, separator = ', ', word = 'or')
     elsif index != (array.length - 1)
       string << "#{element}#{separator}"
     else
-      string << "#{word} #{element}" 
+      string << "#{word} #{element}"
     end
   end
   string
@@ -71,7 +72,7 @@ def player_places_piece!(brd)
 end
 
 def close_win?(brd, line, marker)
-  (brd.values_at(*line).count(marker) == 2 && 
+  (brd.values_at(*line).count(marker) == 2 &&
   brd.values_at(*line).count(INITIAL_MARKER) == 1)
 end
 
@@ -80,8 +81,8 @@ def wise_move!(brd, marker)
   WINNING_LINES.each do |line|
     if close_win?(brd, line, marker)
       move = line.select do |space|
-          brd[space] == INITIAL_MARKER
-          end
+        brd[space] == INITIAL_MARKER
+      end
       brd[move[0]] = COMPUTER_MARKER
       return true
     end
@@ -90,19 +91,11 @@ def wise_move!(brd, marker)
 end
 
 def computer_places_piece!(brd)
-  
   return if wise_move!(brd, COMPUTER_MARKER)
   return if wise_move!(brd, PLAYER_MARKER)
-  # WINNING_LINES.each do |line|
-  #   if close_win?(brd, line, PLAYER_MARKER)
-  #     wise_move!(brd, line, move)
-  #     return
-  #   end
-  # end
-  
+
   if brd[5] == INITIAL_MARKER
     brd[5] = COMPUTER_MARKER
-    return
   else
     square = empty_squares(brd).sample
     brd[square] = COMPUTER_MARKER
@@ -117,7 +110,6 @@ def someone_won?(brd)
   !!detect_winner(brd)
 end
 
-# rubocop:disable Metrics/AbcSize
 def detect_winner(brd)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(PLAYER_MARKER) == 3
@@ -128,7 +120,6 @@ def detect_winner(brd)
   end
   nil
 end
-# rubocop:enable Metrics/AbcSize
 
 def count_wins!(board, player, computer)
   detect_winner(board) == 'Player' ? player[:wins] += 1 : computer[:wins] += 1
@@ -139,9 +130,9 @@ def who_first?
   prompt "('c' to let Computer decide who goes first)"
   input = gets.chomp
   if input.downcase == 'c'
-    return [true, false].sample
+    [true, false].sample
   else
-    input.downcase.start_with?('y') ? true : false
+    input.downcase.start_with?('y')
   end
 end
 
@@ -155,73 +146,64 @@ def place_piece!(brd, player)
 end
 
 def alternate_player(current_player)
-  current_player == "Player" ? "Computer" : "Player" 
+  current_player == "Player" ? "Computer" : "Player"
 end
 
+def play_game(board, current_player)
+  loop do
+    display_board(board)
+    place_piece!(board, current_player)
+    current_player = alternate_player(current_player)
+    break if someone_won?(board) || board_full?(board)
+  end
+end
 
+prompt <<-MSG
+Welcome to Tic Tac Toe! First to win 5 rounds wins the game!#{' '}
+Press any key to continue
+MSG
 
-prompt "Welcome to Tic Tac Toe! First to win 5 rounds wins the game! Press any key to continue"
 gets.chomp
 loop do
-  current_player = (who_first?() ? "Computer" : "Player")
+  current_player = (who_first? ? "Computer" : "Player")
   prompt "#{current_player} goes first!"
   sleep(1)
   puts "Initializing..."
   sleep(3)
   round_counter = 0
-  player = {wins: 0}
-  computer = {wins: 0}
+  player = { wins: 0 }
+  computer = { wins: 0 }
   loop do
     board = initialize_board
     display_board(board)
-  
-    loop do
-      # if #computer_first
-      #   computer_places_piece!(board)
-      #   break if someone_won?(board) || board_full?(board)
-      #   display_board(board)
-      #   player_places_piece!(board)
-      #   break if someone_won?(board) || board_full?(board)
-      # else
-      #   display_board(board)
-      #   player_places_piece!(board)
-      #   break if someone_won?(board) || board_full?(board)
-      #   computer_places_piece!(board)
-      #   break if someone_won?(board) || board_full?(board)
-      # end
-      display_board(board)
-      place_piece!(board, current_player)
-      current_player = alternate_player(current_player)
-      break if someone_won?(board) || board_full?(board)
-    end
-  
+
+    play_game(board, current_player)
     display_board(board)
-  
+
     if someone_won?(board)
       round_counter += 1
       count_wins!(board, player, computer)
-      if player[:wins] == 5
+      if player[:wins] == WINNING_SCORE
         prompt "Player has won the game! #{round_counter} rounds were played"
         break
-      elsif computer[:wins] == 5
+      elsif computer[:wins] == WINNING_SCORE
         prompt "Computer has won the game! #{round_counter} total rounds were played."
         break
       end
       prompt "#{detect_winner(board)} won the round! Player has won #{player[:wins]} rounds and Computer has won #{computer[:wins]} rounds."
-      prompt "Press any key to start the next round"
+      puts "Press any key to start the next round"
       gets.chomp
     else
-      prompt "It's a tie!"
+      prompt "It's a tie! Player has won #{player[:wins]} rounds and Computer has won #{computer[:wins]} rounds."
       prompt "Press any key to continue"
       gets.chomp
       round_counter += 1
     end
   end
   prompt "Player won #{player[:wins]} rounds and Computer won #{computer[:wins]} rounds."
-  prompt "Play again? (y or n)"
+  prompt "Play again? (y/n)"
   answer = gets.chomp
   break unless answer.downcase.start_with?('y')
 end
-
 
 prompt "Thanks for playing Tic Tac Toe! Goodbye!"
