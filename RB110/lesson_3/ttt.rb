@@ -16,7 +16,7 @@ end
 # rubocop:disable Metrics/AbcSize
 def display_board(brd)
   system 'clear'
-  puts "You're an #{PLAYER_MARKER}. Computer is an #{COMPUTER_MARKER}."
+  puts "You're an '#{PLAYER_MARKER}'. Computer is an '#{COMPUTER_MARKER}'."
   puts ""
   puts "     |     |"
   puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}"
@@ -75,14 +75,19 @@ def close_win?(brd, line, marker)
   brd.values_at(*line).count(INITIAL_MARKER) == 1)
 end
 
-def computer_places_piece!(brd)
-  move = 0
-  WINNING_LINES.each do |line|
-    if close_win?(brd, line, COMPUTER_MARKER)
-      move = line.select do |space|
+def wise_move!(brd, line, move)
+  move = line.select do |space|
              brd[space] == INITIAL_MARKER
              end
       brd[move[0]] = COMPUTER_MARKER
+end
+
+def computer_places_piece!(brd)
+  move = 0
+  
+  WINNING_LINES.each do |line|
+    if close_win?(brd, line, COMPUTER_MARKER)
+      wise_move!(brd, line, move)
       return
     
     end
@@ -90,10 +95,7 @@ def computer_places_piece!(brd)
   
   WINNING_LINES.each do |line|
     if close_win?(brd, line, PLAYER_MARKER)
-      move = line.select do |space|
-             brd[space] == INITIAL_MARKER
-             end
-      brd[move[0]] = COMPUTER_MARKER
+      wise_move!(brd, line, move)
       return
     end
   end
@@ -133,7 +135,7 @@ def count_wins!(board, player, computer)
 end
 
 def who_first?
-  prompt "Would you like to let Computer go first for this set of games? (y/n)"
+  prompt "Would you like to let Computer go first? (y/n)"
   prompt "('c' to let Computer decide who goes first)"
   input = gets.chomp
   if input.downcase == 'c'
@@ -143,13 +145,26 @@ def who_first?
   end
 end
 
+def place_piece!(brd, player)
+  case player
+  when "Player"
+    player_places_piece!(brd)
+  when "Computer"
+    computer_places_piece!(brd)
+  end
+end
+
+def alternate_player(current_player)
+  current_player == "Player" ? "Computer" : "Player" 
+end
+
 
 
 prompt "Welcome to Tic Tac Toe! First to win 5 rounds wins the game! Press any key to continue"
 gets.chomp
 loop do
-  computer_first = who_first?()
-  prompt computer_first ? "Computer goes first!" : "Player goes first!"
+  current_player = (who_first?() ? "Computer" : "Player")
+  prompt "#{current_player} goes first!"
   sleep(1)
   puts "Initializing..."
   sleep(3)
@@ -161,19 +176,23 @@ loop do
     display_board(board)
   
     loop do
-      if computer_first
-        computer_places_piece!(board)
-        break if someone_won?(board) || board_full?(board)
-        display_board(board)
-        player_places_piece!(board)
-        break if someone_won?(board) || board_full?(board)
-      else
-        display_board(board)
-        player_places_piece!(board)
-        break if someone_won?(board) || board_full?(board)
-        computer_places_piece!(board)
-        break if someone_won?(board) || board_full?(board)
-      end
+      # if #computer_first
+      #   computer_places_piece!(board)
+      #   break if someone_won?(board) || board_full?(board)
+      #   display_board(board)
+      #   player_places_piece!(board)
+      #   break if someone_won?(board) || board_full?(board)
+      # else
+      #   display_board(board)
+      #   player_places_piece!(board)
+      #   break if someone_won?(board) || board_full?(board)
+      #   computer_places_piece!(board)
+      #   break if someone_won?(board) || board_full?(board)
+      # end
+      display_board(board)
+      place_piece!(board, current_player)
+      current_player = alternate_player(current_player)
+      break if someone_won?(board) || board_full?(board)
     end
   
     display_board(board)
