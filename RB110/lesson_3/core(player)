@@ -1,0 +1,25 @@
+
+[1mFrom:[0m /home/ec2-user/launch-school/launch-school/RB110/lesson_3/twenty_one.rb:62 Object#player_turn:
+
+    [1;34m52[0m: [32mdef[0m [1;34mplayer_turn[0m(player, deck)
+    [1;34m53[0m:   answer = [1;36mnil[0m
+    [1;34m54[0m:   loop [32mdo[0m
+    [1;34m55[0m:     puts [31m[1;31m"[0m[31mHit or Stay?[1;31m"[0m[31m[0m
+    [1;34m56[0m:     answer = gets.chomp.downcase
+    [1;34m57[0m:     [32mbreak[0m [32mif[0m answer == [31m[1;31m'[0m[31mstay[1;31m'[0m[31m[0m
+    [1;34m58[0m:     [32mif[0m answer == [31m[1;31m"[0m[31mhit[1;31m"[0m[31m[0m
+    [1;34m59[0m:       new_card = draw_card!(deck)
+    [1;34m60[0m:       update_hand!(player, new_card) [1;34m# TODO[0m
+    [1;34m61[0m:       score(player)
+ => [1;34m62[0m:       binding.pry[1;34m#> 21[0m
+    [1;34m63[0m:         
+    [1;34m64[0m:   [32mend[0m
+    [1;34m65[0m:   
+    [1;34m66[0m:   [1;34m# if bust?(player)[0m
+    [1;34m67[0m:   [1;34m#   # ask to playy again?[0m
+    [1;34m68[0m:   [1;34m# else[0m
+    [1;34m69[0m:   [1;34m#   puts "You chose to stay!"[0m
+    [1;34m70[0m:   [1;34m# end[0m
+    [1;34m71[0m:   [32mend[0m
+    [1;34m72[0m: [32mend[0m
+

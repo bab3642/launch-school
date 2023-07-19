@@ -179,7 +179,8 @@ loop do
 
     play_game(board, current_player)
     display_board(board)
-
+    
+    # Displays winner
     if someone_won?(board)
       round_counter += 1
       count_wins!(board, player, computer)
