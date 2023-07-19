@@ -70,7 +70,6 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
-#todo - find out why this isn't working
 def close_win?(brd, line, marker)
   (brd.values_at(*line).count(marker) == 2 && 
   brd.values_at(*line).count(INITIAL_MARKER) == 1)
@@ -99,8 +98,13 @@ def computer_places_piece!(brd)
     end
   end
   
-  square = empty_squares(brd).sample
-  brd[square] = COMPUTER_MARKER
+  if brd[5] == INITIAL_MARKER
+    brd[5] = COMPUTER_MARKER
+    return
+  else
+    square = empty_squares(brd).sample
+    brd[square] = COMPUTER_MARKER
+  end
 end
 
 def board_full?(brd)
@@ -128,10 +132,27 @@ def count_wins!(board, player, computer)
   detect_winner(board) == 'Player' ? player[:wins] += 1 : computer[:wins] += 1
 end
 
+def who_first?
+  prompt "Would you like to let Computer go first for this set of games? (y/n)"
+  prompt "('c' to let Computer decide who goes first)"
+  input = gets.chomp
+  if input.downcase == 'c'
+    return [true, false].sample
+  else
+    input.downcase.start_with?('y') ? true : false
+  end
+end
+
+
 
 prompt "Welcome to Tic Tac Toe! First to win 5 rounds wins the game! Press any key to continue"
 gets.chomp
 loop do
+  computer_first = who_first?()
+  prompt computer_first ? "Computer goes first!" : "Player goes first!"
+  sleep(1)
+  puts "Initializing..."
+  sleep(3)
   round_counter = 0
   player = {wins: 0}
   computer = {wins: 0}
@@ -140,12 +161,19 @@ loop do
     display_board(board)
   
     loop do
-      display_board(board)
-      player_places_piece!(board)
-      break if someone_won?(board) || board_full?(board)
-  
-      computer_places_piece!(board)
-      break if someone_won?(board) || board_full?(board)
+      if computer_first
+        computer_places_piece!(board)
+        break if someone_won?(board) || board_full?(board)
+        display_board(board)
+        player_places_piece!(board)
+        break if someone_won?(board) || board_full?(board)
+      else
+        display_board(board)
+        player_places_piece!(board)
+        break if someone_won?(board) || board_full?(board)
+        computer_places_piece!(board)
+        break if someone_won?(board) || board_full?(board)
+      end
     end
   
     display_board(board)
