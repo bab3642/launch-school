@@ -75,30 +75,30 @@ def close_win?(brd, line, marker)
   brd.values_at(*line).count(INITIAL_MARKER) == 1)
 end
 
-def wise_move!(brd, line, move)
-  move = line.select do |space|
-             brd[space] == INITIAL_MARKER
-             end
+def wise_move!(brd, marker)
+  move = 0
+  WINNING_LINES.each do |line|
+    if close_win?(brd, line, marker)
+      move = line.select do |space|
+          brd[space] == INITIAL_MARKER
+          end
       brd[move[0]] = COMPUTER_MARKER
+      return true
+    end
+  end
+  false
 end
 
 def computer_places_piece!(brd)
-  move = 0
   
-  WINNING_LINES.each do |line|
-    if close_win?(brd, line, COMPUTER_MARKER)
-      wise_move!(brd, line, move)
-      return
-    
-    end
-  end
-  
-  WINNING_LINES.each do |line|
-    if close_win?(brd, line, PLAYER_MARKER)
-      wise_move!(brd, line, move)
-      return
-    end
-  end
+  return if wise_move!(brd, COMPUTER_MARKER)
+  return if wise_move!(brd, PLAYER_MARKER)
+  # WINNING_LINES.each do |line|
+  #   if close_win?(brd, line, PLAYER_MARKER)
+  #     wise_move!(brd, line, move)
+  #     return
+  #   end
+  # end
   
   if brd[5] == INITIAL_MARKER
     brd[5] = COMPUTER_MARKER
