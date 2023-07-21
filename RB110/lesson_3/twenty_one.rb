@@ -10,10 +10,10 @@ def prompt(msg)
 end
 
 def initialize_deck!(deck)
-  deck[:clubs] = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
-  deck[:spades] = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
-  deck[:hearts] = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
-  deck[:diamonds] = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+  suits = %i(clubs, spades, hearts, diamonds)
+  suits.each do |suit| 
+    deck[suit] = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+  end
 end
 
 def switch_player(current_player, dealer, player)
@@ -34,30 +34,33 @@ def deal_cards!(player, dealer, deck)
 end
 
 # TODO refactor
-def player_turn!(player, deck)
+def player_turn!(hand, deck)
+  score = hit_or_stay(hand, deck)
+  if bust?(score)
+    puts "You busted with a score of #{score}!"
+  else
+    puts "You chose to stay with a score of #{score}!"
+  end
+end
+
+def hit_or_stay(hand, deck)
   answer = nil
   score = 0
   loop do
     prompt "Hit or Stay?"
     answer = gets.chomp.downcase
     if answer == 'stay'
-      score = score(player)
-      break
+      return score(hand)
     end
     if answer == "hit"
       new_card = draw_card!(deck)
       puts "You drew a #{new_card[1].to_s.capitalize} of #{new_card[0].to_s.capitalize}"
-      update_hand!(player, new_card)
-      score = score(player)
+      update_hand!(hand, new_card)
+      score = score(hand)
       if bust?(score)
-        break
+        return score
       end
     end
-  end
-  if bust?(score)
-    puts "You busted with a score of #{score}!"
-  else
-    puts "You chose to stay with a score of #{score}!"
   end
 end
 
@@ -152,6 +155,7 @@ loop do
   prompt "Player turn:"
   player_turn!(player[:hand], deck)
   if bust?(score(player[:hand]))
+    dealer[:wins] += 1
     prompt "Would you like to play again? (y/n)"
     answer = gets.chomp.downcase
     break unless answer.start_with?('y')
@@ -163,6 +167,7 @@ loop do
   dealer_turn!(dealer[:hand], deck)
   if bust?(score(dealer[:hand]))
     prompt "You win!"
+    player[:wins] += 1
     prompt "Would you like to play again? (y/n)"
     answer = gets.chomp.downcase
     break unless answer.start_with?('y')
@@ -180,3 +185,5 @@ loop do
   answer = gets.chomp.downcase
   break unless answer.start_with?('y')
 end
+
+prompt "Thanks for playing. Goodbye!"
