@@ -33,7 +33,6 @@ def deal_cards!(player, dealer, deck)
   end
 end
 
-# TODO refactor
 def player_turn!(hand, deck)
   score = hit_or_stay(hand, deck)
   if bust?(score)
@@ -82,27 +81,18 @@ end
 # TODO: refactor
 def score(hand)
   values = hand.map do |card|
-    if FACE_CARDS.include?(card.last)
-      10
-    else
-      card.last
-    end
+    FACE_CARDS.include?(card.last) ? 10 : card.last
   end
-  if values.include?(:ace)
-    count = values.count(:ace)
-    values.delete(:ace)
-    sum = values.sum
-    count.times do
-      sum += 11
-    end
-    count.times do
-      if sum > HIGHEST_SCORE
-        sum -= 10
-      end
-    end
-    return sum
-  end
-  values.sum
+  values.include?(:ace) ? score_aces(values) : values.sum
+end
+
+def score_aces(values)
+  count = values.count(:ace)
+  values.delete(:ace)
+  sum = values.sum
+  count.times { sum += 11 }
+  count.times { sum -= 10 if sum > HIGHEST_SCORE }
+  sum
 end
 
 # TODO refactor
