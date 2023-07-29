@@ -9,9 +9,13 @@ def prompt(msg)
   puts "=>#{msg}"
 end
 
+def card_to_string(card_arr)
+  "#{card_arr[1].to_s.capitalize} of #{card_arr[0].to_s.capitalize}"
+end
+
 def initialize_deck!(deck)
-  suits = %i(clubs, spades, hearts, diamonds)
-  suits.each do |suit| 
+  suits = %i(clubs spades hearts diamonds)
+  suits.each do |suit|
     deck[suit] = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
   end
 end
@@ -22,7 +26,7 @@ end
 
 def deal_cards!(player, dealer, deck)
   card_count = 0
-  current_player = player # can change this later, to change who goes first
+  current_player = player # can change this later, to change who is dealt cards first
   loop do
     suit = deck.keys.sample
     current_player[:hand] << [suit, deck[suit].sample]
@@ -34,15 +38,16 @@ def deal_cards!(player, dealer, deck)
 end
 
 def player_turn!(hand, deck)
-  score = hit_or_stay(hand, deck)
+  score = prompt_hit_or_stay!(hand, deck)
   if bust?(score)
-    puts "You busted with a score of #{score}!"
+    prompt "You busted with a score of #{score}!"
   else
-    puts "You chose to stay with a score of #{score}!"
+    prompt "You chose to stay with a score of #{score}!"
   end
 end
 
-def hit_or_stay(hand, deck)
+# TODO refactor
+def prompt_hit_or_stay!(hand, deck)
   answer = nil
   score = 0
   loop do
@@ -53,8 +58,9 @@ def hit_or_stay(hand, deck)
     end
     if answer == "hit"
       new_card = draw_card!(deck)
-      puts "You drew a #{new_card[1].to_s.capitalize} of #{new_card[0].to_s.capitalize}"
+      prompt "You drew a #{new_card[1].to_s.capitalize} of #{new_card[0].to_s.capitalize}"
       update_hand!(hand, new_card)
+      prompt "You now have: #{display_hand(hand)}"
       score = score(hand)
       if bust?(score)
         return score
@@ -78,15 +84,14 @@ def update_hand!(hand, new_card)
   hand << new_card
 end
 
-# TODO: refactor
 def score(hand)
   values = hand.map do |card|
     FACE_CARDS.include?(card.last) ? 10 : card.last
   end
-  values.include?(:ace) ? score_aces(values) : values.sum
+  values.include?(:ace) ? score_aces!(values) : values.sum
 end
 
-def score_aces(values)
+def score_aces!(values)
   count = values.count(:ace)
   values.delete(:ace)
   sum = values.sum
@@ -98,26 +103,30 @@ end
 # TODO refactor
 def dealer_turn!(hand, deck)
   reveal_cards(hand)
-  score = 0
+  score = dealer_hit_or_stay!(hand, deck)
+  if bust?(score)
+    prompt "Dealer busted!"
+  else
+    prompt "Dealer stays with a score of #{score}."
+  end
+end
+
+def dealer_hit_or_stay!(hand, deck)
   loop do
     score = score(hand)
+    prompt "Dealer has: #{display_hand(hand)} with a score of #{score}"
     if score < 17
       new_card = draw_card!(deck)
-      puts "Dealer drew a #{new_card[1].to_s.capitalize} of #{new_card[0].to_s.capitalize}"
+      prompt "Dealer drew a #{card_to_string(new_card)}"
       update_hand!(hand, new_card)
     else
-      break
+      return score
     end
-  end
-  if bust?(score)
-    puts "Dealer busted with a score of #{score}."
-  else
-    puts "Dealer's total score is #{score}."
   end
 end
 
 def reveal_cards(hand)
-  prompt "Dealer's hidden card is: #{hand[1][1].to_s.capitalize} of #{hand[1][0].to_s.capitalize}."
+  prompt "Dealer's hidden card is: #{card_to_string(hand[1])}."
 end
 
 def find_winner(dealer_score, player_score)
@@ -129,18 +138,33 @@ def find_winner(dealer_score, player_score)
     "tie"
   end
 end
+
+def display_hand(hand)
+  string = ''
+  hand.each_with_index do |card, index|
+    if index == (hand.length - 1)
+      string << " and #{card_to_string(card)}"
+    elsif index == (hand.length - 2)
+      string << card_to_string(card)
+    else
+      string << "#{card_to_string(card)}, "
+    end
+  end
+  string
+end
+
+player = { wins: 0 }
+dealer = { wins: 0 }
 loop do
   system "clear"
   deck = {}
   initialize_deck!(deck)
-  player = { hand: [], wins: 0 }
-  dealer = { hand: [], wins: 0 }
+  player[:hand] = []
+  dealer[:hand] = []
   deal_cards!(player, dealer, deck)
 
-  # TODO - These need to be changed to update how many cards the person has, turn into method
-  # TODO - extract these long messages to a HEREDOC
-  prompt "Dealer has: #{dealer[:hand][0][1].to_s.capitalize} of #{dealer[:hand][0][0].to_s.capitalize} and unknown card"
-  prompt "You have: #{player[:hand][0][1].to_s.capitalize} of #{player[:hand][0][0].to_s.capitalize} and #{player[:hand][1][1].to_s.capitalize} of #{player[:hand][1][0].to_s.capitalize}"
+  prompt "Dealer has: #{card_to_string(dealer[:hand][0])} and unknown card"
+  prompt "You have: #{display_hand(player[:hand])}"
 
   prompt "Player turn:"
   player_turn!(player[:hand], deck)
@@ -166,14 +190,20 @@ loop do
   end
 
   winner = find_winner(score(dealer[:hand]), score(player[:hand]))
-  if winner == "tie"
-    prompt "It's a tie!"
-  else
+  case winner
+  when "tie"
+    prompt "It's a tie"
+  when "Player"
     prompt "#{winner} wins!"
+    player[:wins] += 1
+  when "Dealer"
+    prompt "#{winner} wins!"
+    dealer[:wins] += 1
   end
   prompt "Would you like to play again? (y/n)"
   answer = gets.chomp.downcase
   break unless answer.start_with?('y')
 end
 
+prompt "You won #{player[:wins]} times and the dealer won #{dealer[:wins]} times."
 prompt "Thanks for playing. Goodbye!"
