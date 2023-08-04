@@ -1,0 +1,18 @@
+en:
+  welcome: "Welcome to Rock Paper Scissors Lizard Spock!"
+  description: |
+    We will play three rounds!
+      Rock = r
+      Paper = p
+      Scissors = sc
+      Lizard = l
+      Spock = sp
+  name: "Please enter your name:"
+  invalid_choice: "That's not a valid chocie."
+  display_choice: "You chose: \#{player[:choice]}; Computer chose
+    : \#{computer[:choice]}"
+  rounds: "Round \#{round}:"
+
+   
+  
+    

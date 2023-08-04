@@ -1,3 +1,5 @@
+require 'pry'
+
 VALID_CHOICES = %w(r p sc l sp)
 
 MOVES = {
@@ -6,6 +8,14 @@ MOVES = {
   sc: %w(p l),
   sp: %w(sc r),
   l: %w(sp p)
+}
+
+computer = {
+  match_wins: 0
+}
+
+player = {
+  match_wins: 0
 }
 
 def prompt(message)
@@ -46,11 +56,13 @@ Spock = sp
 
 MSG
 prompt(opening_prompt)
+prompt("Please enter your name:")
+player[:name] = Kernel.gets().chomp()
 
 loop do
+  computer[:wins] = 0
+  player[:wins] = 0
   round = 1
-  computer = { wins: 0 }
-  player = { wins: 0 }
   loop do
     prompt("Round #{round}:")
 
@@ -76,9 +88,11 @@ loop do
 
     if computer[:wins] == 3
       prompt("The computer wins the match!")
+      computer[:match_wins] += 1
       break
     elsif player[:wins] == 3
-      prompt("The player wins the match!")
+      prompt("#{player[:name]} wins the match!")
+      player[:match_wins] += 1
       break
     end
   end
@@ -88,4 +102,5 @@ loop do
   break unless answer.downcase().start_with?('y')
 end
 
-prompt("Thank you for playing. Good bye!\n")
+prompt("Thank you for playing, #{player[:name]}. You won #{player[:match_wins]}
+ matches and the computer won #{computer[:match_wins]} matches!!")

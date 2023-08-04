@@ -1,9 +1,11 @@
-# TODO: refactor long methods
 # TODO move long messages to a HEREDOC
 require 'pry'
 
 FACE_CARDS = [:queen, :king, :jack]
-HIGHEST_SCORE = 21
+HIGHEST_SCORE = 21 # can change to desired score
+CARD_DECK = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+SUITS = %i(clubs spades hearts diamonds)
+DEALER_STAY = 17 # can change to modify dealer stay behavior
 
 def prompt(msg)
   puts "=>#{msg}"
@@ -14,9 +16,8 @@ def card_to_string(card_arr)
 end
 
 def initialize_deck!(deck)
-  suits = %i(clubs spades hearts diamonds)
-  suits.each do |suit|
-    deck[suit] = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+  SUITS.each do |suit|
+    deck[suit] = CARD_DECK
   end
 end
 
@@ -26,7 +27,7 @@ end
 
 def deal_cards!(player, dealer, deck)
   card_count = 0
-  current_player = player # can change this later, to change who is dealt cards first
+  current_player = player # can change to 'dealer' for dealer to get dealt first
   loop do
     suit = deck.keys.sample
     current_player[:hand] << [suit, deck[suit].sample]
@@ -46,27 +47,29 @@ def player_turn!(hand, deck)
   end
 end
 
-# TODO refactor
 def prompt_hit_or_stay!(hand, deck)
-  answer = nil
-  score = 0
   loop do
     prompt "Hit or Stay?"
     answer = gets.chomp.downcase
-    if answer == 'stay'
+    if answer == 'stay' || answer == 's'
       return score(hand)
-    end
-    if answer == "hit"
-      new_card = draw_card!(deck)
-      prompt "You drew a #{new_card[1].to_s.capitalize} of #{new_card[0].to_s.capitalize}"
-      update_hand!(hand, new_card)
-      prompt "You now have: #{display_hand(hand)}"
+    elsif answer == "hit" || answer == 'h'
+      hit!(hand, deck)
       score = score(hand)
       if bust?(score)
         return score
       end
+    else
+      prompt "Invalid input."
     end
   end
+end
+
+def hit!(hand, deck)
+  new_card = draw_card!(deck)
+  prompt "You drew a #{card_to_string(new_card)}"
+  update_hand!(hand, new_card)
+  prompt "You now have: #{display_hand(hand)}"
 end
 
 def bust?(score)
@@ -100,9 +103,8 @@ def score_aces!(values)
   sum
 end
 
-# TODO refactor
 def dealer_turn!(hand, deck)
-  reveal_cards(hand)
+  reveal_unknown_card(hand)
   score = dealer_hit_or_stay!(hand, deck)
   if bust?(score)
     prompt "Dealer busted!"
@@ -115,7 +117,7 @@ def dealer_hit_or_stay!(hand, deck)
   loop do
     score = score(hand)
     prompt "Dealer has: #{display_hand(hand)} with a score of #{score}"
-    if score < 17
+    if score < DEALER_STAY
       new_card = draw_card!(deck)
       prompt "Dealer drew a #{card_to_string(new_card)}"
       update_hand!(hand, new_card)
@@ -125,7 +127,7 @@ def dealer_hit_or_stay!(hand, deck)
   end
 end
 
-def reveal_cards(hand)
+def reveal_unknown_card(hand)
   prompt "Dealer's hidden card is: #{card_to_string(hand[1])}."
 end
 
@@ -202,8 +204,8 @@ loop do
   end
   prompt "Would you like to play again? (y/n)"
   answer = gets.chomp.downcase
-  break unless answer.start_with?('y')
+  break unless answer == 'y' || answer == 'yes'
 end
 
-prompt "You won #{player[:wins]} times and the dealer won #{dealer[:wins]} times."
+prompt "You won #{player[:wins]} times and dealer won #{dealer[:wins]} times."
 prompt "Thanks for playing. Goodbye!"

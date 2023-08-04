@@ -1,0 +1,25 @@
+[[1, 2], [3, 4]].map do |arr|
+  puts arr.first
+  arr.first
+end
+
+Line 1 is the method call map on the outer array. There is no side effect. The return value 
+gives us a new array of [1, 3].  The return value is not used
+
+Line 1-3 is Block execution. It takes a paramter arr and uses this on each sub-array. 
+Return value is arr.first, used by map for transformation
+
+Line 2 is the method call first on arr, which returns the first value of the sub-array.
+Puts is then called on this return value to convert it to a string and display it. This returns nil
+
+Line 3 uses the method call first again on arr, to return the first value of the sub-array.
+This return value is then used to determine the return value of the block. 
+
+my_arr = [[18, 7], [3, 12]].each do |arr|
+  arr.each do |num|
+    if num > 5
+      puts num
+    end
+  end
+end
+

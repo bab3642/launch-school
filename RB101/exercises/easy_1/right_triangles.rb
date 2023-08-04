@@ -80,3 +80,57 @@ end
 
 triangle_turner(10, 1)
 triangle_turner(5, 4)
+
+# def triangle(number)
+#   number.times do |num|
+#     spaces = " " * (number - 1 - num)
+#     stars = "*" * (num + 1)
+#     puts "#{spaces}#{stars}"
+#   end
+# end
+
+
+# def upside_down_triangle(number)
+#   number.times do |num|
+#     stars = "*" * (number - 1 - num)
+#     spaces = " " * (num + 1)
+#     puts "#{spaces}#{stars}"
+#   end
+# end
+
+# def mirror_triangle(number)
+#   number.times do |num|
+#     stars = "*" * (num + 1)
+#     puts "#{stars}"
+#   end
+# end
+
+# def upside_down_mirror_triangle(number)
+#   number.times do |num|
+#     stars = "*" * (number - num)
+#     puts "#{stars}"
+#   end
+# end
+
+
+
+# def trapezoid(number)
+#   number.times do |num|
+#     spaces = " " * (number - 1 - num)
+#     stars = "*" * (num + 1) + "*" * (num)
+#     puts "#{spaces}#{stars}"
+#   end
+#   (number - 1).times do |num|
+#     stars = "*" * ((number - 1 - num)  + (number - 2 - num))
+#     spaces = " " * (num + 1)
+#     puts "#{spaces}#{stars}"
+#   end
+# end
+
+# trapezoid(9) 
+
+# trapezoid(0)
+
+# trapezoid(1)
+
+# trapezoid(4)
