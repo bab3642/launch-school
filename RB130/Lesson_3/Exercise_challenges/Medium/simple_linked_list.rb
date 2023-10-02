@@ -15,6 +15,12 @@ class SimpleLinkedList
     end
   end
 
+  def self.from_a(array)
+    list = SimpleLinkedList.new
+    array.instance_of?(Array) ? array.reverse.each { |element| list << element } : nil
+    list
+  end
+
   alias push <<
 
   def last
@@ -42,11 +48,23 @@ class SimpleLinkedList
   end
 
   def peek
-    head.datum
+    head ? head.datum : nil
   end
 
   def include?(obj)
     @list.include?(obj)
+  end
+
+  def pop
+    @list.shift.datum
+  end
+
+  def to_a
+    @list.map(&:datum)
+  end
+
+  def reverse
+    self.class.from_a(@list.reverse.map(&:datum))
   end
 end
 
@@ -58,16 +76,17 @@ class Element
 
   def initialize(element, next_element = nil)
     @datum = element
-    if next_element.instance_of?(Element)
-      @next = next_element
-    elsif next_element
-      @next = self.class.new(next_element.datum)
-    end
-
+    # if next_element.instance_of?(Element)
+    #   @next = next_element
+    # elsif next_element
+    #   @next = self.class.new(next_element.datum)
+    # end
+    @next = next_element
   end
 
   def tail?
-    @next == nil
+    # @next == nil
+    @next.nil?
   end
 
   def next
