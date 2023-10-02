@@ -7,7 +7,12 @@ class SimpleLinkedList
   end
 
   def <<(obj)
-    @list.unshift( (obj.instance_of?(Element) ? obj : Element.new(obj)) )
+    if obj.instance_of?(Element)
+      obj.next = head
+      @list.unshift(obj)
+    else
+      @list.unshift(Element.new(obj, head))
+    end
   end
 
   alias push <<
@@ -39,21 +44,30 @@ class SimpleLinkedList
   def peek
     head.datum
   end
+
+  def include?(obj)
+    @list.include?(obj)
+  end
 end
 
 class Element
   attr_reader :datum
+  attr_accessor :next
 
   @@list = SimpleLinkedList.new
 
   def initialize(element, next_element = nil)
     @datum = element
-    @@list << self
-    @next = self.class.new(next_element.datum) if next_element
+    if next_element.instance_of?(Element)
+      @next = next_element
+    elsif next_element
+      @next = self.class.new(next_element.datum)
+    end
+
   end
 
   def tail?
-    @@list.last == self
+    @next == nil
   end
 
   def next
@@ -61,4 +75,4 @@ class Element
   end
 end
 
-Element.new(1)
+
