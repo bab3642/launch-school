@@ -1,6 +1,3 @@
-# i will be using an array
-# elements can contain a range of data
-
 class SimpleLinkedList
   def initialize
     @list = []
@@ -29,10 +26,6 @@ class SimpleLinkedList
 
   def index(obj)
     @list.index(obj)
-  end
-
-  def [](idx)
-    @list[idx]
   end
 
   def size
@@ -72,20 +65,12 @@ class Element
   attr_reader :datum
   attr_accessor :next
 
-  @@list = SimpleLinkedList.new
-
   def initialize(element, next_element = nil)
     @datum = element
-    # if next_element.instance_of?(Element)
-    #   @next = next_element
-    # elsif next_element
-    #   @next = self.class.new(next_element.datum)
-    # end
     @next = next_element
   end
 
   def tail?
-    # @next == nil
     @next.nil?
   end
 
