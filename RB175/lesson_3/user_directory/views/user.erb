@@ -1,0 +1,16 @@
+<h2><%= @name %></h2>
+<h3>Email: <%= @email %></h3>
+<h3>Interests:</h3>
+<p>
+  <ul>
+    <% @interests.each do |activity| %>
+      <li><%= activity %></li>
+    <% end %>
+  </ul>
+</p>
+
+<p>
+  <% @other_names.each do |name| %>
+  <a href="/users/<%= name %>"><%= name %></a>
+  <% end %>
+</p>
